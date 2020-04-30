@@ -43,6 +43,8 @@ ARG RESTY_CONFIG_OPTIONS="\
     --with-stream_ssl_module \
     --with-threads \
     --add-module=/tmp/nginx-module-vts-0.1.18 \
+    --add-module=/tmp/nginx-module-sts-master \
+    --add-module=/tmp/nginx-module-stream-sts-master \
     "
 ARG RESTY_CONFIG_OPTIONS_MORE=""
 ARG RESTY_ADD_PACKAGE_BUILDDEPS=""
@@ -98,6 +100,10 @@ RUN apk add --no-cache --virtual .build-deps \
     && tar xzf pcre-${RESTY_PCRE_VERSION}.tar.gz \
     && curl -fSL https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
     && tar xzf openresty-${RESTY_VERSION}.tar.gz \
+    && curl -fLo nginx-module-sts.zip https://github.com/vozlt/nginx-module-sts/archive/master.zip \
+    && curl -fLo nginx-module-stream-sts.zip https://github.com/vozlt/nginx-module-stream-sts/archive/master.zip \
+    && unzip nginx-module-sts.zip \
+    && unzip nginx-module-stream-sts.zip \
     && cd /tmp/openresty-${RESTY_VERSION} \
     && ./configure -j${RESTY_J} ${_RESTY_CONFIG_DEPS} ${RESTY_CONFIG_OPTIONS} ${RESTY_CONFIG_OPTIONS_MORE} \
     && make -j${RESTY_J} \
@@ -109,6 +115,8 @@ RUN apk add --no-cache --virtual .build-deps \
         openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
         openresty-${RESTY_VERSION}.tar.gz openresty-${RESTY_VERSION} \
         pcre-${RESTY_PCRE_VERSION}.tar.gz pcre-${RESTY_PCRE_VERSION} \
+        nginx-module-sts-master \
+        nginx-module-stream-sts-master \
     && apk del .build-deps \
     && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
     && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
